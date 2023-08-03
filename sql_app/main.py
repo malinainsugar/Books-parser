@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 import asyncio
 import uvicorn
+import requests
 
 # uvicorn sql_app.main:app --reload
 
@@ -11,32 +12,40 @@ from .database import SessionLocal, engine
 
 # Create Rocketry app
 from rocketry import Rocketry
+from .novelty_parser import parsing_books
 
 app_rocketry = Rocketry(execution="async")
 
 
-# Create some tasks
-# @app_rocketry.task('every 15 seconds')
-# async def do_things():
-#     print('Start parser')
-#     name, price = start_parser()
-#     import requests
+#Create some tasks
+@app_rocketry.task('every 6 hour')
+async def do_things():
+    print("Start")
+    
+    books_list = parsing_books()
 
-#     def blocking_task():
-#         headers = {
-#             'accept': 'application/json',
-#             'Content-Type': 'application/json',
-#         }
+    def blocking_task():
+        headers = {
+                'accept': 'application/json',
+                'Content-Type': 'application/json',
+        }
 
-#         json_data = {
-#             'name': name,
-#             'price': price,
-#         }
-#         response = requests.post('http://127.0.0.1:8000/prices/create', headers=headers, json=json_data)
+        for book in books_list:
+            json_data = {
+            'name' : book['name'],
+            'author' : book['author'],
+            'publisher' : book['publisher'],
+            'year' : book['year'],
+            'page_count' : book['page_count'],
+            'price' : book['price'],
+            'description' : book['description'],
+            'link' : book['link'],
+            'product_id' : book['product_id']
+            }
+            response = requests.post('http://127.0.0.1:8000/books/create', headers=headers, json=json_data)
 
-
-#     loop = asyncio.get_running_loop()
-#     awaitable = loop.run_in_executor(None, blocking_task)
+    loop = asyncio.get_running_loop()
+    awaitable = loop.run_in_executor(None, blocking_task)
 
 
 
@@ -52,11 +61,13 @@ def get_db():
     finally:
         db.close()
 
-# @app.on_event("startup")
-# async def startup_event():
-#     asyncio.create_task(app_rocketry.serve())
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(app_rocketry.serve())
 
-
+@app.get("/")
+def root():
+    return "Rest-api, собирающий данные о книжных новинках. Данные берутся с сайта https://www.chitai-gorod.ru/catalog/collections/novelty."
 
 @app.get("/books", response_model=list[schemas.Novelty])
 def read_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -92,5 +103,5 @@ def delete_book(book_id: int, db: Session = Depends(get_db)):
     crud.delete_book(db=db, book_id=book_id)
     return 'Элемент удален'
 
-# if __name__ == "__main__":
-#     asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
