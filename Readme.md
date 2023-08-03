@@ -1,1 +1,1 @@
-Rest-api, собирающий данные о персонажах различных вселенных. Данные берутся с сайта https://www.fandom.com.
+Rest-api, собирающий данные о книжных новинках. Данные берутся с сайта https://www.chitai-gorod.ru/catalog/collections/novelty.
