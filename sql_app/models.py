@@ -10,9 +10,10 @@ class Novelty(Base):
     author = Column(String)
     publisher = Column(String)
     year = Column(Integer)
-    pageСount = Column(Integer)
+    page_count = Column(Integer)
     price = Column(Integer)
     description = Column(String)
     link = Column(String)
+    product_id = Column(Integer)
 
 

@@ -58,39 +58,39 @@ def get_db():
 
 
 
-# @app.get("/prices/", response_model=list[schemas.Price])
-# def read_prices(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     prices = crud.get_prices(db, skip=skip, limit=limit)
-#     return prices
+@app.get("/books", response_model=list[schemas.Novelty])
+def read_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    books = crud.get_books(db, skip=skip, limit=limit)
+    return books
 
-# @app.get("/prices/{price_id}", response_model=schemas.Price)
-# def read_price(price_id: int, db: Session = Depends(get_db)):
-#     db_price = crud.get_price_by_id(db, price_id=price_id)
-#     if db_price is None:
-#         raise HTTPException(status_code=404, detail='Элемент не найден')
-#     return db_price
+@app.get("/books/{book_id}", response_model=schemas.Novelty)
+def read_book(book_id: int, db: Session = Depends(get_db)):
+    db_book = crud.get_book(db, book_id=book_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail='Элемент не найден')
+    return db_book
 
-# @app.post("/prices/create", response_model=schemas.Price)
-# def create_price(item: schemas.PriceCreate, db: Session = Depends(get_db)):
-#     db_price = crud.get_price_by_name(db, name=item.name)
-#     if db_price and db_price.price == item.price:
-#         raise HTTPException(status_code=400, detail='Элемент с таким названием уже существует')
-#     return crud.create_price(db=db, item=item)
+@app.post("/books/create", response_model=schemas.Novelty)
+def create_book(item: schemas.NoveltyCreate, db: Session = Depends(get_db)):
+    db_book = crud.get_book(db, book_id=item.product_id)
+    if db_book:
+        raise HTTPException(status_code=400, detail='Такой элемент уже существует')
+    return crud.create_book(db=db, item=item)
 
-# @app.put("/prices/{price_id}", response_model=schemas.Price)
-# def update_price(price_id: int, item: schemas.PriceCreate, db: Session = Depends(get_db)):
-#     db_price = crud.get_price_by_id(db, price_id=price_id)
-#     if not db_price:
-#         raise HTTPException(status_code=400, detail='Элемент не найден')
-#     return crud.update_price(db=db, item=item, price_id=price_id)
+@app.put("/books/{book_id}", response_model=schemas.Novelty)
+def update_book(book_id: int, item: schemas.NoveltyUpdate, db: Session = Depends(get_db)):
+    db_book = crud.get_book(db, book_id=book_id)
+    if not db_book:
+        raise HTTPException(status_code=400, detail='Элемент не найден')
+    return crud.update_book(db=db, item=item, book_id=book_id)
 
-# @app.delete("/prices/{price_id}", response_model=dict)
-# def delete_price(price_id: int, db: Session = Depends(get_db)):
-#     db_price = crud.get_price_by_id(db, price_id=price_id)
-#     if not db_price:
-#         raise HTTPException(status_code=400, detail='Элемент не найден')
-#     crud.delete_price(db=db, price_id=price_id)
-#     return {'status':'Элемент удален'}
+@app.delete("/books/{book_id}", response_model=str)
+def delete_book(book_id: int, db: Session = Depends(get_db)):
+    db_book = crud.get_book(db, book_id=book_id)
+    if not db_book:
+        raise HTTPException(status_code=400, detail='Элемент не найден')
+    crud.delete_book(db=db, book_id=book_id)
+    return 'Элемент удален'
 
 # if __name__ == "__main__":
 #     asyncio.run(main())

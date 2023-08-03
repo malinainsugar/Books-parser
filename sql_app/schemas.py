@@ -6,18 +6,20 @@ class NoveltyBase(BaseModel):
     author : str
     publisher : str 
     year : int
-    pageСount : int
+    page_count : int
     price : int
     description : str 
-    link : str 
+    link : str
 
 
 class NoveltyCreate(NoveltyBase):
+    product_id : int
+    pass
+
+class NoveltyUpdate(NoveltyBase):
     pass
 
 
 class Novelty(NoveltyBase):
     id: int
-
-    class Config:
-        orm_mode = True
+    product_id : int
