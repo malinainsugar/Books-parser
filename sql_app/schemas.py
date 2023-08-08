@@ -13,7 +13,7 @@ class NoveltyBase(BaseModel):
 
 
 class NoveltyCreate(NoveltyBase):
-    product_id : int
+    id : int
     pass
 
 class NoveltyUpdate(NoveltyBase):
@@ -22,4 +22,3 @@ class NoveltyUpdate(NoveltyBase):
 
 class Novelty(NoveltyBase):
     id: int
-    product_id : int

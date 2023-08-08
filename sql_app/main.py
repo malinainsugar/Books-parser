@@ -18,10 +18,9 @@ app_rocketry = Rocketry(execution="async")
 
 
 #Create some tasks
-@app_rocketry.task('every 6 hour')
+@app_rocketry.task('every 1 hour')
 async def do_things():
-    print("Start")
-    
+
     books_list = parsing_books()
 
     def blocking_task():
@@ -40,8 +39,9 @@ async def do_things():
             'price' : book['price'],
             'description' : book['description'],
             'link' : book['link'],
-            'product_id' : book['product_id']
+            'id' : book['id']
             }
+            
             response = requests.post('http://127.0.0.1:8000/books/create', headers=headers, json=json_data)
 
     loop = asyncio.get_running_loop()
@@ -83,8 +83,10 @@ def read_book(book_id: int, db: Session = Depends(get_db)):
 
 @app.post("/books/create", response_model=schemas.Novelty)
 def create_book(item: schemas.NoveltyCreate, db: Session = Depends(get_db)):
-    db_book = crud.get_book(db, book_id=item.product_id)
-    if db_book:
+    db_book = crud.get_book(db, book_id=item.id)
+    if db_book and db_book.price != item.price:
+        crud.update_book(db=db, item=item, book_id=item.id)
+    if db_book and db_book.price == item.price:
         raise HTTPException(status_code=400, detail='Такой элемент уже существует')
     return crud.create_book(db=db, item=item)
 

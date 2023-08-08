@@ -14,6 +14,5 @@ class Novelty(Base):
     price = Column(Integer)
     description = Column(String)
     link = Column(String)
-    product_id = Column(Integer)
 
 

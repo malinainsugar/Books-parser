@@ -29,7 +29,7 @@ def parsing_books():
             'price' : price,
             'description' : book_soup.find("div", itemprop="description").get_text().strip().replace("\xa0", ""),
             'link' : link,
-            'product_id' : int(book_soup.find("span", attrs={"class" : "product-detail-characteristics__item-value"}).get_text().strip())
+            'id' : int(book_soup.find("span", attrs={"class" : "product-detail-characteristics__item-value"}).get_text().strip())
         }
         books_list.append(book)
     return books_list

@@ -5,7 +5,7 @@ from . import models, schemas
 
 
 def get_book(db: Session, book_id: int):
-    return db.query(models.Novelty).filter(models.Novelty.product_id == book_id).first()
+    return db.query(models.Novelty).filter(models.Novelty.id == book_id).first()
 
 def get_books(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Novelty).offset(skip).limit(limit).all()
@@ -20,7 +20,7 @@ def create_book(db: Session, item: schemas.NoveltyCreate):
         price = item.price,
         description = item.description,
         link = item.link,
-        product_id = item.product_id
+        id = item.id
     )
     db.add(db_book)
     db.commit()
